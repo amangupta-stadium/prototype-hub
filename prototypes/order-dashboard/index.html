@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="../../design-system/dist/design-system.css">
+
+  <style>
+    /* ── Layout ── */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── Table ── */
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+    }
+
+    .orders-table th {
+      text-align: left;
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-display);
+      font-weight: var(--weight-medium);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .orders-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 0.5px solid var(--color-border);
+      color: var(--color-text-primary);
+      vertical-align: middle;
+    }
+
+    .orders-table tbody tr {
+      cursor: pointer;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .orders-table tbody tr {
+        transition: background 0.15s ease;
+      }
+    }
+
+    .orders-table tbody tr:hover {
+      background: var(--color-surface);
+    }
+
+    .orders-table tbody tr.row--selected {
+      background: var(--color-surface-raised);
+    }
+
+    .orders-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .order-id {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* ── Details panel ── */
+    .detail-panel {
+      position: sticky;
+      top: var(--space-6);
+    }
+
+    .detail-section {
+      padding-bottom: var(--space-5);
+      margin-bottom: var(--space-5);
+      border-bottom: 0.5px solid var(--color-border);
+    }
+
+    .detail-section:last-child {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-family: var(--font-display);
+      font-weight: var(--weight-medium);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 var(--space-3);
+    }
+
+    .gift-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-primary);
+      border-bottom: 0.5px solid var(--color-border);
+    }
+
+    .gift-item:last-child {
+      border-bottom: none;
+    }
+
+    .gift-item-price {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-sm);
+      padding: var(--space-2) 0;
+      color: var(--color-text-secondary);
+    }
+
+    .summary-row--total {
+      font-family: var(--font-display);
+      font-weight: var(--weight-bold);
+      font-size: var(--text-base);
+      color: var(--color-text-primary);
+      padding-top: var(--space-3);
+      margin-top: var(--space-2);
+      border-top: 1px solid var(--color-border-strong);
+    }
+
+    .address-text {
+      font-size: var(--text-sm);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Header ── */
+    .page-header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-6);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .header-title {
+      font-family: var(--font-display);
+      font-weight: var(--weight-bold);
+      font-size: var(--text-md);
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+  </style>
+</head>
+<body class="page">
+
+  <!-- 1. Header -->
+  <header class="page-header">
+    <div class="page-header-inner container">
+      <div class="header-brand">
+        <img src="../../design-system/assets/sprinkle.svg" alt="" style="width:var(--space-8);height:var(--space-8);">
+        <h1 class="header-title">Order dashboard</h1>
+      </div>
+      <a class="btn btn-ghost btn-sm" href="../../">
+        <i class="ti ti-arrow-left" aria-hidden="true"></i> Back to hub
+      </a>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="container" style="padding-top:var(--space-8);padding-bottom:var(--space-12);">
+
+      <!-- 2. Stat cards -->
+      <div class="grid grid-cols-4" style="margin-bottom:var(--space-8);">
+        <div class="stat-card">
+          <p class="stat-label">Total orders</p>
+          <p class="stat-value">1,486</p>
+          <p class="stat-delta stat-delta--up">+18% this month</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Pending</p>
+          <p class="stat-value">24</p>
+          <p class="stat-delta stat-delta--down">-3 from yesterday</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Delivered</p>
+          <p class="stat-value">1,402</p>
+          <p class="stat-delta stat-delta--up">+21% this month</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Total spent</p>
+          <p class="stat-value">$48,320</p>
+        </div>
+      </div>
+
+      <!-- 3. Two-column area -->
+      <div class="dashboard-layout">
+
+        <!-- LEFT: Orders table -->
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <div style="padding:var(--space-5) var(--space-5) var(--space-4);border-bottom:0.5px solid var(--color-border);display:flex;align-items:center;justify-content:space-between;">
+              <h2 style="margin:0;font-size:var(--text-md);">Recent orders</h2>
+              <span class="badge badge-info">6 orders</span>
+            </div>
+            <table class="orders-table" role="grid" aria-label="Recent orders">
+              <thead>
+                <tr>
+                  <th scope="col">Order ID</th>
+                  <th scope="col">Recipient</th>
+                  <th scope="col">Gift</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RIGHT: Order details -->
+        <div class="detail-panel">
+          <div class="card" id="detail-card">
+            <div class="card-body">
+              <h2 style="margin:0 0 var(--space-5);font-size:var(--text-md);">Order details</h2>
+              <div id="detail-content">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const orders = [
+      {
+        id: 'ORD-00421',
+        recipient: 'Maya Rodriguez',
+        gift: 'Snack Attack Bundle',
+        status: 'Delivered',
+        total: 42.00,
+        items: [
+          { name: 'Popcorn Mix (3-pack)', price: 14.00 },
+          { name: 'Dark Chocolate Bar', price: 8.00 },
+          { name: 'Trail Mix Bag', price: 12.00 },
+          { name: 'Personalised card', price: 4.00 },
+        ],
+        address: '742 Evergreen Terrace\nSpringfield, IL 62701\nUnited States',
+        shipping: 4.00,
+      },
+      {
+        id: 'ORD-00420',
+        recipient: 'James Okafor',
+        gift: 'Premium Swag Kit',
+        status: 'Processing',
+        total: 89.50,
+        items: [
+          { name: 'Embroidered hoodie (M)', price: 55.00 },
+          { name: 'Branded water bottle', price: 22.00 },
+          { name: 'Enamel pin set', price: 8.50 },
+        ],
+        address: '1600 Amphitheatre Pkwy\nMountain View, CA 94043\nUnited States',
+        shipping: 4.00,
+      },
+      {
+        id: 'ORD-00419',
+        recipient: 'Priya Nair',
+        gift: 'Birthday Surprise Box',
+        status: 'Delivered',
+        total: 58.00,
+        items: [
+          { name: 'Luxury candle', price: 28.00 },
+          { name: 'Bath salts set', price: 18.00 },
+          { name: 'Gift wrap & ribbon', price: 6.00 },
+        ],
+        address: '221B Baker Street\nLondon, W1U 6SG\nUnited Kingdom',
+        shipping: 6.00,
+      },
+      {
+        id: 'ORD-00418',
+        recipient: 'Tom Lindqvist',
+        gift: 'Team Celebration Pack',
+        status: 'Pending',
+        total: 124.00,
+        items: [
+          { name: 'Cupcake box (12)', price: 48.00 },
+          { name: 'Stadium credits x10', price: 60.00 },
+          { name: 'Thank-you card', price: 4.00 },
+        ],
+        address: 'Kungsgatan 12\n111 35 Stockholm\nSweden',
+        shipping: 12.00,
+      },
+      {
+        id: 'ORD-00417',
+        recipient: 'Aisha Kamara',
+        gift: 'Work-from-Home Kit',
+        status: 'Delivered',
+        total: 76.00,
+        items: [
+          { name: 'Desk plant (succulent)', price: 18.00 },
+          { name: 'Mechanical keyboard', price: 49.00 },
+          { name: 'Mousepad (large)', price: 9.00 },
+        ],
+        address: '88 Rue de Rivoli\n75001 Paris\nFrance',
+        shipping: 0.00,
+      },
+      {
+        id: 'ORD-00416',
+        recipient: 'Carlos Mendes',
+        gift: 'Coffee Lover Set',
+        status: 'Pending',
+        total: 34.50,
+        items: [
+          { name: 'Single-origin beans (250g)', price: 16.00 },
+          { name: 'Pour-over filter pack', price: 8.00 },
+          { name: 'Branded mug', price: 6.50 },
+        ],
+        address: 'Av. da Liberdade 110\n1269-046 Lisbon\nPortugal',
+        shipping: 4.00,
+      },
+    ];
+
+    const statusBadge = {
+      Delivered: 'badge-success',
+      Processing: 'badge-info',
+      Pending: 'badge-warning',
+    };
+
+    let selectedId = orders[0].id;
+
+    function renderTable() {
+      const tbody = document.getElementById('orders-tbody');
+      tbody.innerHTML = orders.map(o => `
+        <tr
+          class="${o.id === selectedId ? 'row--selected' : ''}"
+          data-id="${o.id}"
+          role="row"
+          tabindex="0"
+          aria-selected="${o.id === selectedId}"
+        >
+          <td><span class="order-id">${o.id}</span></td>
+          <td>${o.recipient}</td>
+          <td>${o.gift}</td>
+          <td><span class="badge ${statusBadge[o.status]}">${o.status}</span></td>
+          <td style="font-family:var(--font-mono);font-size:var(--text-sm);">$${o.total.toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('tr').forEach(row => {
+        row.addEventListener('click', () => selectOrder(row.dataset.id));
+        row.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectOrder(row.dataset.id);
+          }
+        });
+      });
+    }
+
+    function renderDetail(order) {
+      const subtotal = order.items.reduce((sum, i) => sum + i.price, 0);
+      document.getElementById('detail-content').innerHTML = `
+        <div class="detail-section">
+          <p class="detail-label">Recipient</p>
+          <div style="display:flex;align-items:center;gap:var(--space-3);">
+            <div class="avatar avatar-md avatar--initials" aria-label="${order.recipient}">
+              ${order.recipient.split(' ').map(n => n[0]).join('')}
+            </div>
+            <div>
+              <p style="margin:0;font-weight:var(--weight-medium);font-size:var(--text-sm);font-family:var(--font-display);">${order.recipient}</p>
+              <p style="margin:0;font-size:var(--text-xs);color:var(--color-text-secondary);">${order.id}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <p class="detail-label">Gift items</p>
+          <div>
+            ${order.items.map(item => `
+              <div class="gift-item">
+                <span>${item.name}</span>
+                <span class="gift-item-price">$${item.price.toFixed(2)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <p class="detail-label">Shipping address</p>
+          <p class="address-text">${order.address.replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <div class="detail-section">
+          <p class="detail-label">Summary</p>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>$${subtotal.toFixed(2)}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>${order.shipping === 0 ? 'Free' : '$' + order.shipping.toFixed(2)}</span>
+          </div>
+          <div class="summary-row summary-row--total">
+            <span>Total</span>
+            <span>$${order.total.toFixed(2)}</span>
+          </div>
+        </div>
+
+        <div style="margin-top:var(--space-5);">
+          <span class="badge ${statusBadge[order.status]}" style="margin-right:var(--space-2);">${order.status}</span>
+        </div>
+      `;
+    }
+
+    function selectOrder(id) {
+      selectedId = id;
+      const order = orders.find(o => o.id === id);
+      renderTable();
+      renderDetail(order);
+    }
+
+    renderTable();
+    renderDetail(orders[0]);
+  </script>
+
+</body>
+</html>
