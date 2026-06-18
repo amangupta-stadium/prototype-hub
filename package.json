@@ -1,0 +1,12 @@
+{
+  "name": "prototype-hub",
+  "version": "1.0.0",
+  "description": "Shared design system and vibe-coded prototypes, hosted on GitHub Pages.",
+  "private": true,
+  "scripts": {
+    "build": "node design-system/build-tokens.js",
+    "serve": "npx serve .",
+    "dev": "npm run build && npm run serve"
+  },
+  "license": "UNLICENSED"
+}

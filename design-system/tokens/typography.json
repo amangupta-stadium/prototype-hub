@@ -1,0 +1,31 @@
+{
+  "font": {
+    "family": {
+      "display": { "value": "'Satoshi', system-ui, -apple-system, sans-serif" },
+      "body":    { "value": "'Overpass', system-ui, -apple-system, sans-serif" },
+      "mono":    { "value": "ui-monospace, 'SF Mono', Menlo, monospace" }
+    },
+    "weight": {
+      "regular": { "value": "400" },
+      "medium":  { "value": "500" },
+      "bold":    { "value": "700" }
+    },
+    "size": {
+      "xs":   { "value": "11px" },
+      "sm":   { "value": "13px" },
+      "base": { "value": "15px" },
+      "md":   { "value": "17px" },
+      "lg":   { "value": "20px" },
+      "xl":   { "value": "24px" },
+      "2xl":  { "value": "30px" },
+      "3xl":  { "value": "38px" },
+      "4xl":  { "value": "48px" }
+    },
+    "line-height": {
+      "tight":   { "value": "1.2" },
+      "snug":    { "value": "1.4" },
+      "normal":  { "value": "1.6" },
+      "relaxed": { "value": "1.8" }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "color": {
+    "brand": {
+      "punch":   { "value": "#FF5B77", "comment": "Primary CTA, highlights" },
+      "lime":    { "value": "#00C036", "comment": "Success, growth, positive" },
+      "tuscany": { "value": "#FFB800", "comment": "Warning, featured, attention" },
+      "lilac":   { "value": "#8D12E7", "comment": "Premium, magic moments" },
+      "morocco": { "value": "#0B7AFC", "comment": "Links, info, interactive" }
+    },
+    "on-brand": {
+      "plum":     { "value": "#7D102E", "comment": "Text on Punch" },
+      "parsley":  { "value": "#226104", "comment": "Text on Lime" },
+      "bronze":   { "value": "#674F02", "comment": "Text on Tuscany" },
+      "indigo":   { "value": "#4C0E7A", "comment": "Text on Lilac" },
+      "sapphire": { "value": "#083467", "comment": "Text on Morocco" }
+    },
+    "neutral": {
+      "0":   { "value": "#FFFFFF" },
+      "50":  { "value": "#F7F7F6" },
+      "100": { "value": "#EFEFED" },
+      "200": { "value": "#E2E2DF" },
+      "300": { "value": "#CBCBC6" },
+      "400": { "value": "#A8A8A1" },
+      "500": { "value": "#82827B" },
+      "600": { "value": "#5F5F59" },
+      "700": { "value": "#444440" },
+      "800": { "value": "#2A2A28" },
+      "900": { "value": "#1A1A18" }
+    },
+    "semantic": {
+      "success": { "value": "#1E8E3E" },
+      "warning": { "value": "#C77700" },
+      "danger":  { "value": "#D93025" },
+      "info":    { "value": "#0B7AFC" }
+    }
+  }
+}
