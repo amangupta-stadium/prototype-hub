@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recognition feed — Stadium</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="../../design-system/dist/design-system.css">
+
+  <style>
+    /* Prototype layout chrome — components use design-system classes + tokens */
+    .feed-shell { display: grid; grid-template-columns: 224px minmax(0,1fr) 300px;
+      gap: var(--space-6); align-items: start; }
+    .feed-side { position: sticky; top: var(--space-5); }
+    .nav-list { list-style: none; margin: 0; padding: 0; }
+    .nav-link { display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-2) var(--space-3); border-radius: var(--radius-md);
+      font-family: var(--font-display); font-weight: var(--weight-medium); font-size: var(--text-sm);
+      color: var(--color-text-secondary); cursor: pointer; border: none; background: none;
+      width: 100%; text-align: left; }
+    .nav-link:hover { background: var(--color-neutral-100); color: var(--color-text-primary); }
+    .nav-link.is-active { background: var(--color-neutral-100); color: var(--color-text-primary); }
+    .nav-link i { font-size: 18px; }
+    .nav-heading { font-family: var(--font-display); font-weight: var(--weight-medium);
+      font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--color-text-tertiary); margin: var(--space-5) 0 var(--space-2) var(--space-3); }
+    .nav-empty { font-size: var(--text-sm); color: var(--color-text-tertiary);
+      padding: var(--space-2) var(--space-3); }
+    .post-head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .post-actor { display: flex; align-items: center; gap: var(--space-2); }
+    .post-name { font-family: var(--font-display); font-weight: var(--weight-medium); }
+    .post-time { font-size: var(--text-sm); color: var(--color-text-tertiary); }
+    .gift-block { display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+      background: var(--color-neutral-50); margin: var(--space-3) 0; }
+    .gift-block i { font-size: 22px; }
+    .gift-label { font-family: var(--font-display); font-weight: var(--weight-medium); font-size: var(--text-sm); }
+    .gift-detail { font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .post-msg { margin: var(--space-3) 0; }
+    .hashtag { color: var(--color-morocco); font-weight: var(--weight-medium); }
+    .react-bar { display: flex; align-items: center; gap: var(--space-2);
+      padding-top: var(--space-3); border-top: 0.5px solid var(--color-border); margin-top: var(--space-3); }
+    .react-btn { display: inline-flex; align-items: center; gap: var(--space-1);
+      border: 0.5px solid var(--color-border); background: var(--color-surface);
+      border-radius: var(--radius-full); padding: var(--space-1) var(--space-3);
+      font-size: var(--text-sm); color: var(--color-text-secondary); cursor: pointer;
+      font-family: var(--font-body); }
+    .react-btn:hover { border-color: var(--color-border-strong); color: var(--color-text-primary); }
+    .react-btn.is-on { background: rgba(255,91,119,0.12); border-color: var(--color-punch); color: var(--color-punch); }
+    .react-btn i { font-size: 16px; }
+    .comment-area { margin-top: var(--space-3); display: none; }
+    .comment-area.is-open { display: block; }
+    .comment { display: flex; gap: var(--space-2); align-items: flex-start; margin-bottom: var(--space-2); }
+    .comment-bubble { background: var(--color-neutral-100); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); font-size: var(--text-sm); }
+    .lb-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; }
+    .lb-rank { font-family: var(--font-display); font-weight: var(--weight-bold);
+      font-size: var(--text-sm); color: var(--color-text-tertiary); min-width: 18px; }
+    .lb-name { font-size: var(--text-sm); font-weight: var(--weight-medium); flex: 1; }
+    .lb-count { font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .tag-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-2) 0; }
+    .quick-row { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; }
+    .quick-name { font-size: var(--text-sm); font-weight: var(--weight-medium); flex: 1; }
+    .gift-pick { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+    .gift-pick-btn { display: inline-flex; align-items: center; gap: var(--space-1);
+      border: 0.5px solid var(--color-border); background: var(--color-surface);
+      border-radius: var(--radius-md); padding: var(--space-2) var(--space-3);
+      font-family: var(--font-display); font-weight: var(--weight-medium); font-size: var(--text-sm);
+      color: var(--color-text-secondary); cursor: pointer; }
+    .gift-pick-btn i { font-size: 16px; }
+    .gift-pick-btn.is-on { border-color: var(--color-punch); color: var(--color-punch); background: rgba(255,91,119,0.08); }
+    .filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2);
+      margin-bottom: var(--space-5); }
+    .filter-chip { display: inline-flex; align-items: center; gap: var(--space-1);
+      border: 0.5px solid var(--color-border); background: var(--color-surface);
+      border-radius: var(--radius-full); padding: var(--space-1) var(--space-3);
+      font-size: var(--text-sm); color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-body); }
+    .filter-chip.is-on { background: var(--color-neutral-900); color: var(--color-neutral-0); border-color: var(--color-neutral-900); }
+    .feed-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+    @media (max-width: 1040px) {
+      .feed-shell { grid-template-columns: 200px minmax(0,1fr); }
+      .feed-right { display: none; }
+    }
+    @media (max-width: 720px) {
+      .feed-shell { grid-template-columns: 1fr; }
+      .feed-left { display: none; }
+    }
+  </style>
+</head>
+<body class="page">
+
+  <header class="page-header">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-5);">
+      <span class="logo-mark" style="display:flex;align-items:center;gap:var(--space-2);">
+        <img src="../../design-system/assets/sprinkle.svg" alt="">
+        <strong style="font-family:var(--font-display);">Recognition</strong>
+      </span>
+      <div style="display:flex;align-items:center;gap:var(--space-3);">
+        <a class="btn btn-ghost btn-sm" href="../../"><i class="ti ti-arrow-left" aria-hidden="true"></i> Hub</a>
+        <div class="avatar avatar-md avatar--initials" aria-label="You">YO</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="container">
+      <div class="feed-shell">
+
+        <!-- ============ LEFT NAV ============ -->
+        <nav class="feed-side feed-left" aria-label="Feeds">
+          <p class="nav-heading">Feeds</p>
+          <ul class="nav-list" id="feed-nav">
+            <li><button class="nav-link is-active" data-feed="company"><i class="ti ti-building-community" aria-hidden="true"></i> Company feed</button></li>
+            <li><button class="nav-link" data-feed="you"><i class="ti ti-user-heart" aria-hidden="true"></i> Your feed</button></li>
+          </ul>
+
+          <p class="nav-heading">Saved views</p>
+          <ul class="nav-list" id="saved-views">
+            <li class="nav-empty" id="saved-empty">Filter the company feed, then save the view here.</li>
+          </ul>
+        </nav>
+
+        <!-- ============ CENTER FEED ============ -->
+        <section>
+          <!-- Posting box -->
+          <div class="card" style="margin-bottom:var(--space-6);">
+            <div class="card-body">
+              <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+                <div class="avatar avatar-md avatar--initials" aria-label="You">YO</div>
+                <div style="flex:1;">
+                  <input class="form-input" id="recognize-who" placeholder="Recognize someone… @name">
+                  <input class="form-input" id="recognize-msg" placeholder="Say why they're awesome — add a #hashtag" style="margin-top:var(--space-2);">
+                  <div class="gift-pick" id="gift-pick">
+                    <button class="gift-pick-btn is-on" data-gift="stars"><i class="ti ti-star" aria-hidden="true"></i> Kudos</button>
+                    <button class="gift-pick-btn" data-gift="kit"><i class="ti ti-gift" aria-hidden="true"></i> Curated kit</button>
+                    <button class="gift-pick-btn" data-gift="shop"><i class="ti ti-shopping-bag" aria-hidden="true"></i> Shop item</button>
+                    <button class="gift-pick-btn" data-gift="auto"><i class="ti ti-bolt" aria-hidden="true"></i> Automation</button>
+                    <button class="gift-pick-btn" data-gift="money"><i class="ti ti-cash" aria-hidden="true"></i> Money</button>
+                  </div>
+                  <div style="display:flex;justify-content:flex-end;margin-top:var(--space-3);">
+                    <button class="btn btn-primary" id="send-recognition"><i class="ti ti-send" aria-hidden="true"></i> Send recognition</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feed title + filter bar -->
+          <div class="feed-title">
+            <h2 id="feed-heading" style="margin:0;">Company feed</h2>
+            <button class="btn btn-secondary btn-sm" id="save-view" style="display:none;"><i class="ti ti-bookmark" aria-hidden="true"></i> Save view</button>
+          </div>
+
+          <div class="filter-bar" id="filter-bar">
+            <span style="font-size:var(--text-sm);color:var(--color-text-secondary);">Filter:</span>
+            <button class="filter-chip" data-filter="stars"><i class="ti ti-star" aria-hidden="true"></i> Kudos</button>
+            <button class="filter-chip" data-filter="kit"><i class="ti ti-gift" aria-hidden="true"></i> Kits</button>
+            <button class="filter-chip" data-filter="shop"><i class="ti ti-shopping-bag" aria-hidden="true"></i> Shop</button>
+            <button class="filter-chip" data-filter="auto"><i class="ti ti-bolt" aria-hidden="true"></i> Automation</button>
+            <button class="filter-chip" data-filter="money"><i class="ti ti-cash" aria-hidden="true"></i> Money</button>
+          </div>
+
+          <div id="feed" class="stack stack-md"></div>
+        </section>
+
+        <!-- ============ RIGHT SIDEBAR ============ -->
+        <aside class="feed-side feed-right" aria-label="Highlights">
+
+          <div class="card" style="margin-bottom:var(--space-4);">
+            <div class="card-body">
+              <h3 class="card-title" style="font-size:var(--text-md);"><i class="ti ti-trophy" style="color:var(--color-tuscany);" aria-hidden="true"></i> Leaderboard</h3>
+              <p style="font-size:var(--text-sm);color:var(--color-text-tertiary);margin:0 0 var(--space-2);">Top recognizers this month</p>
+              <div class="lb-row"><span class="lb-rank">1</span><div class="avatar avatar-sm avatar--initials">PR</div><span class="lb-name">Priya R.</span><span class="lb-count">48</span></div>
+              <div class="lb-row"><span class="lb-rank">2</span><div class="avatar avatar-sm avatar--initials">DK</div><span class="lb-name">Dan K.</span><span class="lb-count">41</span></div>
+              <div class="lb-row"><span class="lb-rank">3</span><div class="avatar avatar-sm avatar--initials">MR</div><span class="lb-name">Maya R.</span><span class="lb-count">37</span></div>
+              <div class="lb-row"><span class="lb-rank">4</span><div class="avatar avatar-sm avatar--initials">YO</div><span class="lb-name">You</span><span class="lb-count">29</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:var(--space-4);">
+            <div class="card-body">
+              <h3 class="card-title" style="font-size:var(--text-md);"><i class="ti ti-hash" style="color:var(--color-morocco);" aria-hidden="true"></i> Trending</h3>
+              <div class="tag-row"><span class="hashtag">#teamwork</span><span class="lb-count">126</span></div>
+              <div class="tag-row"><span class="hashtag">#shipit</span><span class="lb-count">94</span></div>
+              <div class="tag-row"><span class="hashtag">#aboveandbeyond</span><span class="lb-count">71</span></div>
+              <div class="tag-row"><span class="hashtag">#customerlove</span><span class="lb-count">58</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title" style="font-size:var(--text-md);"><i class="ti ti-users" style="color:var(--color-lilac);" aria-hidden="true"></i> Recognize quickly</h3>
+              <p style="font-size:var(--text-sm);color:var(--color-text-tertiary);margin:0 0 var(--space-2);">People you work with often</p>
+              <div class="quick-row"><div class="avatar avatar-sm avatar--initials">SL</div><span class="quick-name">Sam L.</span><button class="btn btn-secondary btn-sm">Recognize</button></div>
+              <div class="quick-row"><div class="avatar avatar-sm avatar--initials">JT</div><span class="quick-name">Jess T.</span><button class="btn btn-secondary btn-sm">Recognize</button></div>
+              <div class="quick-row"><div class="avatar avatar-sm avatar--initials">AO</div><span class="quick-name">Avi O.</span><button class="btn btn-secondary btn-sm">Recognize</button></div>
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /* ---- Gift type metadata ---- */
+    const GIFTS = {
+      stars: { label: "Kudos",         icon: "ti-star",          badge: "badge-tuscany", color: "var(--color-tuscany)" },
+      kit:   { label: "Curated kit",   icon: "ti-gift",          badge: "badge-punch",   color: "var(--color-punch)" },
+      shop:  { label: "Shop item",     icon: "ti-shopping-bag",  badge: "badge-info",    color: "var(--color-morocco)" },
+      auto:  { label: "Automation",    icon: "ti-bolt",          badge: "badge-lilac",   color: "var(--color-lilac)" },
+      money: { label: "Direct money",  icon: "ti-cash",          badge: "badge-lime",    color: "var(--color-lime)" },
+    };
+
+    /* ---- Seed posts ---- */
+    let posts = [
+      { id: 1, from: "Priya R.", fi: "PR", to: "Sam L.", ti: "SL", gift: "stars", detail: "50 stars",
+        msg: "Stayed late to unblock the release. Total lifesaver. #teamwork #shipit", time: "12m",
+        react: { celebrate: 14, like: 6, love: 3 }, comments: [{ who: "Dan K.", txt: "Legend!" }] },
+      { id: 2, from: "System", fi: "SY", to: "Maya R.", ti: "MR", gift: "auto", detail: "Work anniversary — 3 years",
+        msg: "Happy work anniversary, Maya! Thanks for three brilliant years. #milestone", time: "1h",
+        react: { celebrate: 31, like: 9, love: 12 }, comments: [] },
+      { id: 3, from: "Dan K.", fi: "DK", to: "You", ti: "YO", gift: "kit", detail: "Sweet & Salty snack box",
+        msg: "Your demo blew the client away. Snacks on me! #customerlove", time: "3h",
+        react: { celebrate: 22, like: 11, love: 5 }, comments: [{ who: "Jess T.", txt: "Well deserved 👏" }] },
+      { id: 4, from: "You", fi: "YO", to: "Avi O.", ti: "AO", gift: "money", detail: "$25",
+        msg: "Picked up my on-call shift without hesitation. Coffee's on me for a month. #aboveandbeyond", time: "5h",
+        react: { celebrate: 8, like: 4, love: 2 }, comments: [] },
+      { id: 5, from: "Jess T.", fi: "JT", to: "Dan K.", ti: "DK", gift: "shop", detail: "Yeti tumbler from the Shop",
+        msg: "Mentored two new hires this sprint and never missed a beat. #teamwork", time: "8h",
+        react: { celebrate: 17, like: 7, love: 4 }, comments: [] },
+    ];
+
+    /* ---- State ---- */
+    let activeFeed = "company";   // company | you | a saved-view id
+    let activeFilters = new Set();
+    let composeGift = "stars";
+    let savedViews = [];
+    let nextId = 100;
+
+    const feedEl = document.getElementById("feed");
+    const savedEl = document.getElementById("saved-views");
+    const savedEmpty = document.getElementById("saved-empty");
+    const saveBtn = document.getElementById("save-view");
+    const headingEl = document.getElementById("feed-heading");
+    const filterBar = document.getElementById("filter-bar");
+
+    /* ---- Render feed ---- */
+    function visiblePosts() {
+      let list = posts;
+      if (activeFeed === "you") {
+        list = list.filter(p => p.from === "You" || p.to === "You");
+      }
+      if (activeFilters.size) {
+        list = list.filter(p => activeFilters.has(p.gift));
+      }
+      return list;
+    }
+
+    function escapeTags(msg) {
+      return msg.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
+    }
+
+    function renderFeed() {
+      const list = visiblePosts();
+      if (!list.length) {
+        feedEl.innerHTML = '<div class="card"><div class="card-body" style="text-align:center;color:var(--color-text-secondary);">No recognitions match this view yet.</div></div>';
+        return;
+      }
+      feedEl.innerHTML = list.map(p => {
+        const g = GIFTS[p.gift];
+        const comments = p.comments.map(c =>
+          `<div class="comment"><div class="avatar avatar-sm avatar--initials">${c.who.split(" ").map(w=>w[0]).join("")}</div><div><strong style="font-size:var(--text-sm);font-family:var(--font-display);">${c.who}</strong><div class="comment-bubble">${c.txt}</div></div></div>`
+        ).join("");
+        return `
+        <article class="card" data-id="${p.id}">
+          <div class="card-body">
+            <div class="post-head">
+              <div class="post-actor">
+                <div class="avatar avatar-md avatar--initials">${p.fi}</div>
+                <span class="post-name">${p.from}</span>
+              </div>
+              <i class="ti ti-arrow-right" style="color:var(--color-text-tertiary);" aria-hidden="true"></i>
+              <div class="post-actor">
+                <div class="avatar avatar-md avatar--initials">${p.ti}</div>
+                <span class="post-name">${p.to}</span>
+              </div>
+              <span class="post-time" style="margin-left:auto;">${p.time}</span>
+            </div>
+
+            <span class="badge ${g.badge}"><i class="ti ${g.icon}" aria-hidden="true"></i> ${g.label}</span>
+
+            <div class="gift-block">
+              <i class="ti ${g.icon}" style="color:${g.color};" aria-hidden="true"></i>
+              <div><div class="gift-label">${g.label}</div><div class="gift-detail">${p.detail}</div></div>
+            </div>
+
+            <p class="post-msg">${escapeTags(p.msg)}</p>
+
+            <div class="react-bar">
+              <button class="react-btn" data-react="celebrate"><i class="ti ti-confetti" aria-hidden="true"></i> ${p.react.celebrate}</button>
+              <button class="react-btn" data-react="like"><i class="ti ti-thumb-up" aria-hidden="true"></i> ${p.react.like}</button>
+              <button class="react-btn" data-react="love"><i class="ti ti-heart" aria-hidden="true"></i> ${p.react.love}</button>
+              <button class="react-btn" data-comment style="margin-left:auto;"><i class="ti ti-message-circle" aria-hidden="true"></i> ${p.comments.length}</button>
+            </div>
+
+            <div class="comment-area">
+              ${comments}
+              <input class="form-input" placeholder="Add a comment…" data-comment-input style="margin-top:var(--space-2);">
+            </div>
+          </div>
+        </article>`;
+      }).join("");
+    }
+
+    /* ---- Reactions & comments (event delegation) ---- */
+    feedEl.addEventListener("click", e => {
+      const reactBtn = e.target.closest("[data-react]");
+      if (reactBtn) {
+        const id = +reactBtn.closest("[data-id]").dataset.id;
+        const post = posts.find(p => p.id === id);
+        const key = reactBtn.dataset.react;
+        if (reactBtn.classList.contains("is-on")) { post.react[key]--; reactBtn.classList.remove("is-on"); }
+        else { post.react[key]++; reactBtn.classList.add("is-on"); }
+        const icon = reactBtn.querySelector("i").outerHTML;
+        reactBtn.innerHTML = icon + " " + post.react[key];
+        return;
+      }
+      const commentBtn = e.target.closest("[data-comment]");
+      if (commentBtn) {
+        commentBtn.closest(".card-body").querySelector(".comment-area").classList.toggle("is-open");
+      }
+    });
+
+    feedEl.addEventListener("keydown", e => {
+      const input = e.target.closest("[data-comment-input]");
+      if (input && e.key === "Enter" && input.value.trim()) {
+        const id = +input.closest("[data-id]").dataset.id;
+        const post = posts.find(p => p.id === id);
+        post.comments.push({ who: "You", txt: input.value.trim() });
+        renderFeed();
+        const reopened = feedEl.querySelector(`[data-id="${id}"] .comment-area`);
+        if (reopened) reopened.classList.add("is-open");
+      }
+    });
+
+    /* ---- Feed nav (Company / Your feed / saved views) ---- */
+    document.getElementById("feed-nav").addEventListener("click", e => {
+      const btn = e.target.closest(".nav-link");
+      if (!btn) return;
+      setActiveFeed(btn.dataset.feed, btn);
+    });
+
+    function clearNavActive() {
+      document.querySelectorAll(".nav-link").forEach(b => b.classList.remove("is-active"));
+    }
+
+    function setActiveFeed(feed, btn) {
+      activeFeed = feed;
+      clearNavActive();
+      btn.classList.add("is-active");
+      if (feed === "company") { headingEl.textContent = "Company feed"; showFilterBar(true); activeFilters.clear(); syncFilterChips(); }
+      else if (feed === "you") { headingEl.textContent = "Your feed"; showFilterBar(false); activeFilters.clear(); }
+      renderFeed();
+    }
+
+    function showFilterBar(show) {
+      filterBar.style.display = show ? "flex" : "none";
+      saveBtn.style.display = (show && activeFilters.size) ? "inline-flex" : "none";
+    }
+
+    /* ---- Filters ---- */
+    filterBar.addEventListener("click", e => {
+      const chip = e.target.closest(".filter-chip");
+      if (!chip) return;
+      const f = chip.dataset.filter;
+      if (activeFilters.has(f)) activeFilters.delete(f); else activeFilters.add(f);
+      chip.classList.toggle("is-on");
+      saveBtn.style.display = activeFilters.size ? "inline-flex" : "none";
+      renderFeed();
+    });
+
+    function syncFilterChips() {
+      document.querySelectorAll(".filter-chip").forEach(c =>
+        c.classList.toggle("is-on", activeFilters.has(c.dataset.filter)));
+      saveBtn.style.display = activeFilters.size ? "inline-flex" : "none";
+    }
+
+    /* ---- Save filtered view ---- */
+    saveBtn.addEventListener("click", () => {
+      if (!activeFilters.size) return;
+      const filters = [...activeFilters];
+      const name = filters.map(f => GIFTS[f].label).join(" + ");
+      const id = "view-" + (savedViews.length + 1);
+      savedViews.push({ id, name, filters });
+      savedEmpty.style.display = "none";
+      const li = document.createElement("li");
+      li.innerHTML = `<button class="nav-link" data-view="${id}"><i class="ti ti-bookmark" aria-hidden="true"></i> ${name}</button>`;
+      savedEl.appendChild(li);
+      li.querySelector(".nav-link").addEventListener("click", function () {
+        const view = savedViews.find(v => v.id === id);
+        activeFeed = id;
+        activeFilters = new Set(view.filters);
+        clearNavActive();
+        this.classList.add("is-active");
+        headingEl.textContent = view.name;
+        showFilterBar(true);
+        syncFilterChips();
+        renderFeed();
+      });
+    });
+
+    /* ---- Compose: gift picker ---- */
+    document.getElementById("gift-pick").addEventListener("click", e => {
+      const btn = e.target.closest(".gift-pick-btn");
+      if (!btn) return;
+      document.querySelectorAll(".gift-pick-btn").forEach(b => b.classList.remove("is-on"));
+      btn.classList.add("is-on");
+      composeGift = btn.dataset.gift;
+    });
+
+    /* ---- Compose: send ---- */
+    document.getElementById("send-recognition").addEventListener("click", () => {
+      const who = document.getElementById("recognize-who").value.trim().replace(/^@/, "") || "A teammate";
+      const msg = document.getElementById("recognize-msg").value.trim() || "Thanks for being awesome!";
+      const ti = who.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+      const defaults = { stars: "25 stars", kit: "Curated snack box", shop: "Item from the Shop", auto: "Automated reward", money: "$20" };
+      posts.unshift({ id: nextId++, from: "You", fi: "YO", to: who, ti, gift: composeGift,
+        detail: defaults[composeGift], msg, time: "now", react: { celebrate: 0, like: 0, love: 0 }, comments: [] });
+      document.getElementById("recognize-who").value = "";
+      document.getElementById("recognize-msg").value = "";
+      if (activeFeed === "company" || activeFeed === "you") renderFeed();
+    });
+
+    /* ---- Init ---- */
+    renderFeed();
+  </script>
+</body>
+</html>
